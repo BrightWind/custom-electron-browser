@@ -1,0 +1,43 @@
+{
+  "name": "custom-electron-browser",
+  "version": "0.1.0",
+  "description": "Minimal Electron scaffold with a secure native access bridge.",
+  "private": true,
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.spkes.customelectronbrowser",
+    "productName": "Custom Electron Browser",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^41.0.0",
+    "electron-builder": "^26.8.1"
+  }
+}

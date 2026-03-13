@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Electron Browser</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./renderer.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="panel catalog-panel" aria-labelledby="catalog-title">
+        <h2 id="catalog-title" class="sr-only">Top toolbar</h2>
+
+        <div class="row-shell row-one-shell" aria-label="Category row">
+          <div class="row-one-wrap" data-row-one-wrap>
+            <ul class="chip-row chip-row-row-one" data-category-row></ul>
+          </div>
+          <div class="row-one-actions">
+            <button
+              type="button"
+              class="button-secondary manage-button"
+              data-action="manage-categories"
+              aria-label="Manage categories"
+              title="Manage categories"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M11 5a1 1 0 0 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6z" />
+              </svg>
+            </button>
+            <div class="row-one-scroll" data-row-one-scroll-controls hidden>
+              <button
+                type="button"
+                class="row-one-scroll-button"
+                data-action="row-one-scroll-up"
+                aria-label="Scroll categories up"
+                title="Scroll up"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 7.4l5.3 5.3a1 1 0 1 1-1.4 1.4L12 10.23 8.1 14.1a1 1 0 0 1-1.4-1.4L12 7.4z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="row-one-scroll-button"
+                data-action="row-one-scroll-down"
+                aria-label="Scroll categories down"
+                title="Scroll down"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 16.6l-5.3-5.3a1 1 0 1 1 1.4-1.4L12 13.77l3.9-3.87a1 1 0 0 1 1.4 1.4L12 16.6z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-separator" aria-hidden="true"></div>
+
+        <div class="row-shell row-two-shell" aria-label="Category expansion row">
+          <div class="row-two-wrap" data-row-two-wrap>
+            <ul class="chip-row chip-row-row-two" data-item-row></ul>
+          </div>
+          <div class="row-two-scroll" data-row-two-scroll-controls hidden>
+            <button
+              type="button"
+              class="row-one-scroll-button"
+              data-action="row-two-scroll-up"
+              aria-label="Scroll items up"
+              title="Scroll up"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 7.4l5.3 5.3a1 1 0 1 1-1.4 1.4L12 10.23 8.1 14.1a1 1 0 0 1-1.4-1.4L12 7.4z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="row-one-scroll-button"
+              data-action="row-two-scroll-down"
+              aria-label="Scroll items down"
+              title="Scroll down"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 16.6l-5.3-5.3a1 1 0 1 1 1.4-1.4L12 13.77l3.9-3.87a1 1 0 0 1 1.4 1.4L12 16.6z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <dialog class="modal" data-modal="category">
+        <!-- View 1: Category list -->
+        <div class="modal-card" data-view="category-list">
+          <h3>Manage categories</h3>
+          <ul class="manage-list" data-manage-list></ul>
+          <div class="button-row">
+            <button type="button" data-action="show-add-category-form">＋ Add category</button>
+            <button type="button" class="button-secondary" data-action="close-category-dialog">Close</button>
+          </div>
+        </div>
+        <!-- View 2: Add / Edit category form -->
+        <form class="modal-card" data-form="category-dialog" novalidate hidden>
+          <h3 data-dialog-form-title>Add category</h3>
+          <label>
+            <span>Icon</span>
+            <div class="icon-input-row">
+              <input type="text" maxlength="4" placeholder="e.g. 🤖" data-field="dialog-category-icon" />
+              <button type="button" class="pick-icon-btn" data-pick-icon-for="dialog-category-icon" aria-label="Pick emoji">Pick ▾</button>
+            </div>
+          </label>
+          <div class="icon-picker-panel" data-icon-picker="dialog-category-icon" hidden></div>
+          <label>
+            <span>Name</span>
+            <input type="text" maxlength="40" placeholder="e.g. AI tools" data-field="dialog-category-name" />
+          </label>
+          <div class="button-row">
+            <button type="submit" data-dialog-submit-button>Add</button>
+            <button type="button" class="button-secondary" data-action="back-to-list">Back</button>
+          </div>
+        </form>
+        <!-- View 3: Item list -->
+        <div class="modal-card" data-view="item-list" hidden>
+          <h3 data-item-list-title>Items</h3>
+          <ul class="manage-list" data-item-manage-list></ul>
+          <div class="button-row">
+            <button type="button" data-action="show-add-item-form">＋ Add item</button>
+            <button type="button" class="button-secondary" data-action="back-to-category-list">← Back</button>
+          </div>
+        </div>
+        <!-- View 4: Add / Edit item form -->
+        <form class="modal-card" data-form="item-dialog" novalidate hidden>
+          <h3 data-item-form-title>Add item</h3>
+          <label>
+            <span>Icon</span>
+            <div class="icon-input-row">
+              <input type="text" maxlength="4" placeholder="e.g. 💬" data-field="dialog-item-icon" />
+              <button type="button" class="pick-icon-btn" data-pick-icon-for="dialog-item-icon" aria-label="Pick emoji">Pick ▾</button>
+            </div>
+          </label>
+          <div class="icon-picker-panel" data-icon-picker="dialog-item-icon" hidden></div>
+          <label>
+            <span>Name</span>
+            <input type="text" maxlength="40" placeholder="e.g. ChatGPT" data-field="dialog-item-name" />
+          </label>
+          <label>
+            <span>URL</span>
+            <input type="text" placeholder="https://example.com" data-field="dialog-item-url" />
+          </label>
+          <div class="button-row">
+            <button type="submit" data-item-submit-button>Add</button>
+            <button type="button" class="button-secondary" data-action="back-to-item-list">Back</button>
+          </div>
+        </form>
+      </dialog>
+
+      <div class="content-stack" data-content-stack>
+
+      <section class="panel info-grid" aria-label="Application information">
+        <article>
+          <span class="label">App</span>
+          <strong data-app-name>Loading...</strong>
+        </article>
+        <article>
+          <span class="label">Version</span>
+          <strong data-app-version>Loading...</strong>
+        </article>
+        <article>
+          <span class="label">Platform</span>
+          <strong data-platform>Loading...</strong>
+        </article>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel" aria-labelledby="native-access-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Native capability</p>
+              <h2 id="native-access-title">Directory-scoped file access</h2>
+            </div>
+            <div class="button-row">
+              <button type="button" data-action="choose-directory">Choose Directory</button>
+              <button type="button" class="button-secondary" data-action="reload-directory" disabled>
+                Reload
+              </button>
+            </div>
+          </div>
+
+          <div class="directory-meta">
+            <span class="label">Selected directory</span>
+            <strong data-directory-name>None</strong>
+            <span class="muted" data-directory-path>No directory approved yet.</span>
+          </div>
+
+          <ul class="entry-list" data-directory-entries></ul>
+        </section>
+
+        <section class="panel" aria-labelledby="preview-title">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">Safe preview</p>
+              <h2 id="preview-title">Text file viewer</h2>
+            </div>
+          </div>
+
+          <div class="preview-meta">
+            <span class="label">Current file</span>
+            <strong data-preview-path>No file selected</strong>
+          </div>
+
+          <pre class="preview" data-preview-content>Choose a directory, then select a text file to preview it here.</pre>
+        </section>
+      </section>
+
+      <section class="panel external-panel" aria-labelledby="external-title">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">Shell integration</p>
+            <h2 id="external-title">Open an external URL</h2>
+          </div>
+        </div>
+
+        <div class="external-row">
+          <input
+            type="url"
+            value="https://www.electronjs.org"
+            placeholder="https://example.com"
+            data-external-url
+          />
+          <button type="button" data-action="open-external">Open</button>
+        </div>
+
+        <p class="status" data-status="info" data-status></p>
+      </section>
+      </div>
+
+      <!-- Inline browser pane -->
+      <div class="webview-pane" data-webview-pane style="top: 100vh">
+        <div class="webview-bar" data-webview-bar>
+          <span class="webview-url" data-webview-url></span>
+          <button type="button" class="webview-close-btn" data-action="close-webview" aria-label="Close browser" title="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.3 5.7a1 1 0 0 1 0 1.4L13.4 12l4.9 4.9a1 1 0 0 1-1.4 1.4L12 13.4l-4.9 4.9a1 1 0 0 1-1.4-1.4L10.6 12 5.7 7.1a1 1 0 0 1 1.4-1.4L12 10.6l4.9-4.9a1 1 0 0 1 1.4 0z"/></svg>
+          </button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
