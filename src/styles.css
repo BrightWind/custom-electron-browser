@@ -600,6 +600,7 @@ button:disabled {
   font-family: 'Cascadia Mono', 'Consolas', monospace;
 }
 
+.webview-icon-btn,
 .webview-close-btn {
   width: 1.8rem;
   height: 1.8rem;
@@ -613,11 +614,13 @@ button:disabled {
   flex-shrink: 0;
 }
 
+.webview-icon-btn:hover,
 .webview-close-btn:hover {
   background: rgba(240, 250, 255, 0.26);
   transform: none;
 }
 
+.webview-icon-btn svg,
 .webview-close-btn svg {
   width: 0.9rem;
   height: 0.9rem;

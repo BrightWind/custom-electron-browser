@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('nativeApi', {
   openBrowserPane: (url, itemId, barBottom) => ipcRenderer.invoke('browser-pane:open', url, itemId, barBottom),
   closeBrowserPane: () => ipcRenderer.invoke('browser-pane:close'),
   resizeBrowserPane: (barBottom) => ipcRenderer.invoke('browser-pane:resize', barBottom),
+  reloadBrowserPane: (itemId, ignoreCache = false) => ipcRenderer.invoke('browser-pane:reload', itemId, ignoreCache),
   destroyBrowserPane: (itemId) => ipcRenderer.invoke('browser-pane:destroy', itemId),
   destroyAllBrowserPanes: () => ipcRenderer.invoke('browser-pane:destroy-all')
 });

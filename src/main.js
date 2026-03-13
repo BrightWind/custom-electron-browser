@@ -10,6 +10,10 @@ const browserPaneViews = new Map(); // itemId -> WebContentsView
 let activePaneItemId = null;
 let lastBarBottom = 0;
 
+function isReloadShortcut(input) {
+  return input.key === 'F5' || ((input.control || input.meta) && input.key.toLowerCase() === 'r');
+}
+
 function setupPopupWindow(win) {
   win.webContents.setWindowOpenHandler(({ url }) => {
     let parsed;
@@ -81,6 +85,24 @@ function createPaneView() {
       shell.openExternal(url);
     }
   });
+  view.webContents.on('before-input-event', (event, input) => {
+    if (!isReloadShortcut(input)) {
+      return;
+    }
+
+    if (input.type !== 'keyDown') {
+      event.preventDefault();
+      return;
+    }
+
+    if (input.shift && (input.control || input.meta) && input.key.toLowerCase() === 'r') {
+      view.webContents.reloadIgnoringCache();
+    } else {
+      view.webContents.reload();
+    }
+
+    event.preventDefault();
+  });
   return view;
 }
 
@@ -131,6 +153,26 @@ function resizeBrowserPane(barBottom) {
   const [w, h] = mainWindow.getContentSize();
   const y = Math.round(barBottom);
   view.setBounds({ x: 0, y, width: w, height: Math.max(0, h - y) });
+}
+
+function reloadBrowserPane(itemId = activePaneItemId, ignoreCache = false) {
+  if (itemId === null) {
+    return false;
+  }
+
+  const view = browserPaneViews.get(itemId);
+
+  if (!view) {
+    return false;
+  }
+
+  if (ignoreCache) {
+    view.webContents.reloadIgnoringCache();
+  } else {
+    view.webContents.reload();
+  }
+
+  return true;
 }
 
 function destroyBrowserPane(itemId) {
@@ -199,6 +241,22 @@ function createWindow() {
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.key === 'F12' && !input.alt && !input.meta) {
       mainWindow.webContents.toggleDevTools();
+      event.preventDefault();
+      return;
+    }
+
+    if (!isReloadShortcut(input) || !isBrowserPaneVisible()) {
+      return;
+    }
+
+    if (input.type !== 'keyDown') {
+      event.preventDefault();
+      return;
+    }
+
+    const shouldIgnoreCache = input.shift && (input.control || input.meta) && input.key.toLowerCase() === 'r';
+
+    if (reloadBrowserPane(activePaneItemId, shouldIgnoreCache)) {
       event.preventDefault();
     }
   });
@@ -337,6 +395,10 @@ ipcMain.handle('browser-pane:close', () => {
 ipcMain.handle('browser-pane:resize', (_event, barBottom) => {
   resizeBrowserPane(barBottom);
   return true;
+});
+
+ipcMain.handle('browser-pane:reload', (_event, itemId, ignoreCache = false) => {
+  return reloadBrowserPane(itemId, ignoreCache);
 });
 
 ipcMain.handle('browser-pane:destroy', (_event, itemId) => {

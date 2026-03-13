@@ -44,6 +44,7 @@ const contentStackElement = document.querySelector('[data-content-stack]');
 const webviewPaneElement = document.querySelector('[data-webview-pane]');
 const webviewBarElement = document.querySelector('[data-webview-bar]');
 const webviewUrlElement = document.querySelector('[data-webview-url]');
+const refreshWebviewButton = document.querySelector('[data-action="refresh-webview"]');
 const catalogPanelElement = document.querySelector('.catalog-panel');
 
 const CATALOG_STORAGE_KEY = 'custom-electron-browser.catalog.v1';
@@ -769,6 +770,18 @@ function closeWebView() {
   requestAnimationFrame(syncRowTwoView);
 }
 
+async function refreshWebView(ignoreCache = false) {
+  if (!state.selectedItemId) {
+    return;
+  }
+
+  const reloaded = await window.nativeApi.reloadBrowserPane(state.selectedItemId, ignoreCache);
+
+  if (reloaded) {
+    setStatus(`Reloaded ${webviewUrlElement.textContent}.`);
+  }
+}
+
 const catalogResizeObserver = new ResizeObserver(() => {
   if (webviewPaneElement.classList.contains('is-open')) {
     webviewPaneElement.style.top = `${catalogPanelElement.getBoundingClientRect().bottom}px`;
@@ -1077,6 +1090,12 @@ itemRowElement.addEventListener('click', (event) => {
 
 document.querySelector('[data-action="close-webview"]').addEventListener('click', () => {
   closeWebView();
+});
+
+refreshWebviewButton.addEventListener('click', () => {
+  refreshWebView().catch((error) => {
+    setStatus(error.message, 'error');
+  });
 });
 
 showAppInfo()
