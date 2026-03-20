@@ -78,3 +78,5 @@ window.nativeApi.openExternal(url)
 ```
 
 The project uses plain JavaScript only. No TypeScript or extra runtime dependencies are included.
+
+# Road Map
